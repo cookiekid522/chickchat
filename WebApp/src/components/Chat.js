@@ -7,19 +7,32 @@ export class Chat extends React.Component {
     render () {
         return (
             <div style={rootStyle}>
-                <ul style={ulStyle}>
+                <ul style={ulStyle} ref="messages">
                     {this.props.messages.map(renderMessage)}
                 </ul>
                 <ReplyBox/>
                 </div>
-              )}
+
+        )
+    }
+
+    componentDidUpdate (prevProps) {
+        if (prevProps.messages.length === this.props.messages.length) {
+            return
+        }
+
+        const element = this.refs.messages
+        if (element) {
+            element.scrollTop = element.scrollHeight
+        }
+    }
 }
 function renderMessage (message) {
     return (
         <li key={message.messageId}>
 
-            <img src={message.author.picture}/>
-            {message.author.name + ":"}
+            <img style= {imageStyle} src = {message.author.picture} height = "64" />
+            <span style={{color:"yellow",fontFamily:"arial"}}>{message.author.name + ": "}</span>
 
             {getMessageBody(message)}
         </li>
@@ -28,18 +41,19 @@ function renderMessage (message) {
 
 const ulStyle = {
     overflowY: "scroll",
-
-    /* Exercise 4: Add your own styles */
+    listStyle: "none"
 
 }
 
 const imageStyle = {
     maxWidth: "100px",
     maxHeight: "100px",
+    borderRadius: "100px",
     objectFit: "contain"
 }
 
 const rootStyle = {
+    backgroundColor: "skyblue",
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
@@ -53,8 +67,13 @@ function getMessageDate (message) {
 function getMessageBody (message) {
     if (message.data) {
         return <img src={message.data} style={imageStyle} />
-    } else {
-        return message.text
+    }
+    else
+    {
+
+        return <span style={{color:"navy",fontFamily:"courier new"}}>
+            {message.text}
+          </span>
     }
 }
 
